@@ -22,9 +22,9 @@ def _calcular_distancia_y_rumbo(lat1: float, lon1: float, lat2: float, lon2: flo
     dist_str = f'{int(dist_m)} m' if dist_m < 1000 else f'{dist_m / 1000.0:.2f} km'
     y = math.sin(dlambda) * math.cos(phi2)
     x = math.cos(phi1) * math.sin(phi2) - math.sin(phi1) * math.cos(phi2) * math.cos(dlambda)
-    brng = (math.degrees(math.atan2(y, x)) + 360.0) \% 360.0
+    brng = (math.degrees(math.atan2(y, x)) + 360.0) % 360.0
     puntos = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO']
-    return dist_str, f'{puntos[int((brng + 22.5) // 45) \% 8]} ({int(brng)}°)'
+    return dist_str, f'{puntos[int((brng + 22.5) // 45) % 8]} ({int(brng)}°)'
 
 def construir_mapa_view(page: ft.Page, db: DatabaseManager, sync: SyncService, refrescar_badge, map_cache: MapCacheService):
     gps = GPSService(page)
