@@ -1,30 +1,8 @@
 [project]
 name = 'bitacora-de-rio'
-version = '1.0.1'
-description = 'Bitacora de Pesca Offline-First - Club Los Panemas'
-readme = 'README.md'
-requires-python = '>=3.10'
-dependencies = [
-    'flet>=0.80.0',
-    'pillow>=10.0.0',
-    'flet-geolocator',
-    'flet-map',
-]
+version = '1.0.0'
+dependencies = ['flet>=0.80.0', 'pillow']
 
 [tool.flet]
 org = 'com.lospanemas'
 product = 'Bitacora de Rio'
-company = 'Club Los Panemas'
-copyright = 'Copyright (C) 2026 Club Los Panemas'
-
-[tool.flet.app]
-path = '.'
-
-[tool.flet.android]
-package = 'com.lospanemas.bitacorario'
-
-[tool.flet.android.permission]
-'android.permission.INTERNET' = true
-'android.permission.ACCESS_NETWORK_STATE' = true
-'android.permission.ACCESS_FINE_LOCATION' = true
-'android.permission.ACCESS_COARSE_LOCATION' = true
