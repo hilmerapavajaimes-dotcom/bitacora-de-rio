@@ -1,0 +1,51 @@
+name: Compilar APK Bitacora de Rio
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-android-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Configurar Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Instalar dependencias de Python y Flet
+        run: |
+          python -m pip install --upgrade pip
+          pip install 'flet>=0.80.0' pillow flet-geolocator
+
+      - name: Generar icono HD y diagramas de nudos offline
+        run: |
+          python -c from services.icon_service import asegurar_icono_app; from services.nudos_media_service import NUDOS_CATALOGO, obtener_media_nudo; asegurar_icono_app(); [obtener_media_nudo(n['slug']) for n in NUDOS_CATALOGO]
+
+      - name: Compilar APK para Android
+        run: |
+          flet build apk --verbose
+
+      - name: Subir APK compilado como Artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bitacora-de-Rio-APK
+          path: build/apk/*.apk
+          if-no-files-found: error

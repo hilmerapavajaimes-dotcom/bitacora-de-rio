@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite3
+build/
+dist/
+.venv/
+venv/
+map_cache/
+fichas_capturas/
