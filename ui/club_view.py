@@ -95,7 +95,7 @@ def construir_club_view(page: ft.Page, db: DatabaseManager, sync: SyncService, r
         for c in db.obtener_clubes():
             activo = c['codigo'] == actual['codigo']
             def entrar_club(cod=c['codigo']):
-                return lambda e: (db.cambiar_club_activo(cod), sync.sincronizar_en_segundo_plano(), cambiar_tab(0)(e))
+                return lambda e: (sync.reiniciar_stream_chat(), db.cambiar_club_activo(cod), sync.sincronizar_en_segundo_plano(), cambiar_tab(0)(e))
             lista_clubes_ui.controls.append(ft.Container(bgcolor=COLOR_CARD_ALT, border_radius=12, padding=12, border=ft.Border.all(1, COLOR_ACCENT if activo else COLOR_BORDER), content=ft.Row(alignment=ft.MainAxisAlignment.SPACE_BETWEEN, controls=[ft.Column(spacing=2, expand=True, controls=[ft.Text(c['nombre'] + (' (Activo)' if activo else ''), weight=ft.FontWeight.BOLD, color=COLOR_TEXT), ft.Text('Admin: ' + c['admin_nombre'] + ' • Cod: ' + c['codigo'], size=11, color=COLOR_MUTED)]), ft.Button('Chat', bgcolor=COLOR_PRIMARY, color=COLOR_TEXT, on_click=entrar_club())])))
     def crear_club(e):
         perfil = db.obtener_perfil()
@@ -104,14 +104,14 @@ def construir_club_view(page: ft.Page, db: DatabaseManager, sync: SyncService, r
         if not nom: return
         slug = re.sub(r'[^a-z0-9]+', '-', nom.lower()).strip('-') + '-' + uuid.uuid4().hex[:4]
         db.crear_o_actualizar_club(slug, nom, txt_nuevo_desc.value.strip(), perfil['email'], perfil['nombre'], 1 if sw_club_pub.value else 0, '', '', 0)
-        db.cambiar_club_activo(slug); txt_nuevo_nombre.value = ''; txt_nuevo_desc.value = ''
+        sync.reiniciar_stream_chat(), db.cambiar_club_activo(slug); txt_nuevo_nombre.value = ''; txt_nuevo_desc.value = ''
         sync.sincronizar_en_segundo_plano(); refrescar_clubes(); renderizar_chat(); cambiar_tab(0)(e)
 
     def unirse_codigo(e):
         cod = re.sub(r'[^a-zA-Z0-9_-]', '', txt_unirse_cod.value.strip().lower())
         if not cod: return
         if not db.obtener_club(cod): db.crear_o_actualizar_club(cod, 'Club ' + cod, 'Grupo por invitacion', 'externo', 'Club', 0, '', '', 1)
-        db.cambiar_club_activo(cod); txt_unirse_cod.value = ''; sync.sincronizar_en_segundo_plano(); cambiar_tab(0)(e)
+        sync.reiniciar_stream_chat(), db.cambiar_club_activo(cod); txt_unirse_cod.value = ''; sync.sincronizar_en_segundo_plano(); cambiar_tab(0)(e)
 
     vista_clubes = ft.ListView(expand=True, spacing=12, controls=[panel_admin_ui, ft.Container(bgcolor=COLOR_CARD, border_radius=14, padding=14, border=ft.Border.all(1, COLOR_BORDER), content=ft.Column(spacing=8, controls=[ft.Text('Unirse a un Club por Codigo', size=15, weight=ft.FontWeight.BOLD, color=COLOR_TEXT), ft.Row(spacing=8, controls=[txt_unirse_cod, ft.Button('Unirse', bgcolor=COLOR_ACCENT, color=COLOR_BG, on_click=unirse_codigo)])])), ft.Container(bgcolor=COLOR_CARD, border_radius=14, padding=14, border=ft.Border.all(1, COLOR_BORDER), content=ft.Column(spacing=8, controls=[ft.Text('Crear Nuevo Club de Pesca', size=15, weight=ft.FontWeight.BOLD, color=COLOR_TEXT), lbl_club_msg, txt_nuevo_nombre, txt_nuevo_desc, sw_club_pub, ft.Button('Crear y Administrar Club', icon=ft.Icons.ADD_CIRCLE, bgcolor=COLOR_PRIMARY, color=COLOR_TEXT, width=400, on_click=crear_club)])), ft.Text('Directorio de Clubes en Red', size=14, weight=ft.FontWeight.BOLD, color=COLOR_TEXT), lista_clubes_ui])
 
@@ -139,7 +139,7 @@ def construir_club_view(page: ft.Page, db: DatabaseManager, sync: SyncService, r
             estado['tab'] = idx
             for i, b in enumerate(btns):
                 b.bgcolor, b.color = (COLOR_PRIMARY, COLOR_TEXT) if i == idx else (COLOR_CARD_ALT, COLOR_MUTED)
-            if idx == 1: refrescar_clubes()
+            if idx == 1: sync.sincronizar_en_segundo_plano(True); refrescar_clubes()
             if idx == 0: renderizar_chat()
             contenedor.content = vistas[idx]
             if e: page.update()
