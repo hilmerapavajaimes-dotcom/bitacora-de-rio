@@ -1,6 +1,6 @@
 [project]
 name = 'bitacora-de-rio'
-version = '1.0.0'
+version = '1.0.1'
 description = 'Bitacora de Pesca Offline-First - Club Los Panemas'
 readme = 'README.md'
 requires-python = '>=3.10'
@@ -8,6 +8,7 @@ dependencies = [
     'flet>=0.80.0',
     'pillow>=10.0.0',
     'flet-geolocator',
+    'flet-map',
 ]
 
 [tool.flet]

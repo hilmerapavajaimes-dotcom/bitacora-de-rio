@@ -183,13 +183,7 @@ def main(page: ft.Page):
         ],
     )
 
-    page.add(
-        ft.Column(
-            expand=True,
-            spacing=0,
-            controls=[header, contenedor_principal, nav_bar],
-        )
-    )
+    page.add(ft.SafeArea(expand=True, content=ft.Column(expand=True, spacing=0, controls=[header, contenedor_principal, nav_bar])))
 
     sync.sincronizar_en_segundo_plano()
 
