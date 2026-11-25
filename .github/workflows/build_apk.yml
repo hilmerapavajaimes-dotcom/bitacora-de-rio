@@ -37,7 +37,13 @@ jobs:
 
       - name: Generar icono HD y diagramas de nudos offline
         run: |
-          python -c from services.icon_service import asegurar_icono_app; from services.nudos_media_service import NUDOS_CATALOGO, obtener_media_nudo; asegurar_icono_app(); [obtener_media_nudo(n['slug']) for n in NUDOS_CATALOGO]
+          python - << 'EOF'
+          from services.icon_service import asegurar_icono_app
+          from services.nudos_media_service import NUDOS_CATALOGO, obtener_media_nudo
+          asegurar_icono_app()
+          for n in NUDOS_CATALOGO:
+              obtener_media_nudo(n['slug'])
+          EOF
 
       - name: Compilar APK para Android
         run: |
